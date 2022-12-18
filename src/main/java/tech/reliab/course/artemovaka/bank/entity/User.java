@@ -2,34 +2,37 @@ package tech.reliab.course.artemovaka.bank.entity;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class User extends Person {
     private String addressJob;
     private double monthIncome;
-    private Bank bank;
-    private CreditAccount creditAccount;
-    private PaymentAccount paymentAccount;
+    private List<Bank> banks = new ArrayList<>();
+    private int countCreditAccount;
+    private int countPaymentAccount;
     private int creditRating;
 
     public User() {
         super();
     }
 
-    public User(int id, String name, LocalDate dateBirth, double monthIncome, String addressJob, Bank bank) {
+    public User(int id, String name, LocalDate dateBirth, double monthIncome, String addressJob) {
         super(id, name, dateBirth);
         this.addressJob = addressJob;
         this.monthIncome = monthIncome;
-        this.bank = bank;
         creditRating = 0;
+        countPaymentAccount = 0;
+        countCreditAccount = 0;
     }
 
     public User(User user) {
         super(user.getId(), user.getName(), user.getDateBirth());
         this.addressJob = user.getAddressJob();
         this.monthIncome = user.getMonthIncome();
-        this.bank = user.getBank();
-        creditAccount = user.getCreditAccount();
-        paymentAccount = user.getPaymentAccount();
+        this.banks = user.getBanks();
+        countPaymentAccount = user.getCountPaymentAccount();
+        countCreditAccount = user.getCountCreditAccount();
         creditRating = user.getCreditRating();
     }
 
@@ -41,9 +44,8 @@ public class User extends Person {
                 "Дата рождения: " + dateBirth.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) + "\n" +
                 "Работа: " + addressJob + "\n" +
                 "Ежемесячный доход: " + String.format("%.4f", monthIncome) + "\n" +
-                "Банк: " + (bank != null ? bank.getName() : "") + "\n" +
-                "ID кредитного аккаунта: " + (creditAccount != null ? creditAccount.getId() : "") + "\n" +
-                "ID платежного аккаунта: " + (paymentAccount != null ? paymentAccount.getId() : "") + "\n" +
+                "Кол-во кредитных аккаунтов: " + countCreditAccount + "\n" +
+                "Кол-во платежных аккаунтов: " + countPaymentAccount + "\n" +
                 "Кредитный рейтинг: " + creditRating + "\n";
     }
 
@@ -63,29 +65,30 @@ public class User extends Person {
         return monthIncome;
     }
 
-    public void setBank(Bank bank) {
-        this.bank = bank;
+    public List<Bank> getBanks() {
+        return banks;
     }
 
-    public Bank getBank() {
-        return bank;
+    public void addBank(Bank bank) {
+        this.banks.add(bank);
     }
 
-    public void setCreditAccount(CreditAccount account) {
-        creditAccount = account;
+    public void setCountCreditAccount(int count) {
+        this.countCreditAccount = count;
     }
 
-    public CreditAccount getCreditAccount() {
-        return creditAccount;
+    public int getCountCreditAccount() {
+        return countCreditAccount;
     }
 
-    public void setPaymentAccount(PaymentAccount account) {
-        paymentAccount = account;
+    public void setCountPaymentAccount(int count) {
+        this.countPaymentAccount = count;
     }
 
-    public PaymentAccount getPaymentAccount() {
-        return paymentAccount;
+    public int getCountPaymentAccount() {
+        return countPaymentAccount;
     }
+
 
     public void setCreditRating(int rating) {
         creditRating = rating;

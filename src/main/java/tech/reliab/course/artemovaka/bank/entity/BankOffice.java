@@ -13,8 +13,10 @@ public class BankOffice {
     private boolean isPayInMoney;
     private double money;
     private double rentPrice;
+    private int countEmployee;
 
-    public BankOffice() {}
+    public BankOffice() {
+    }
 
     public BankOffice(int id, String name, String address, Bank bank, boolean isWorking, boolean isInstallAtm,
                       boolean isGiveCredit, boolean isGiveMoney, boolean isPayInMoney, double money,
@@ -31,6 +33,7 @@ public class BankOffice {
         this.isPayInMoney = isPayInMoney;
         this.money = money;
         this.rentPrice = rentPrice;
+        this.countEmployee = 0;
     }
 
     public BankOffice(BankOffice bankOffice) {
@@ -46,6 +49,7 @@ public class BankOffice {
         this.money = bankOffice.getMoney();
         this.rentPrice = bankOffice.getRentPrice();
         this.isPayInMoney = bankOffice.getIsPayInMoney();
+        this.countEmployee = bankOffice.getCountEmployee();
     }
 
     @Override
@@ -157,6 +161,14 @@ public class BankOffice {
     }
 
     public double getRentPrice() {
-        return rentPrice;
+        return this.rentPrice;
+    }
+
+    public void setCountEmployee(int count) {
+        this.countEmployee = count;
+    }
+
+    public int getCountEmployee() {
+        return this.countEmployee;
     }
 }

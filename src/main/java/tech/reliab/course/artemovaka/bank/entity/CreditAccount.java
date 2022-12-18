@@ -31,7 +31,6 @@ public class CreditAccount extends Account {
         this.paymentAccount = paymentAccount;
         this.interestRate = 0;
         this.remainingSum = this.money;
-        super.user.setCreditAccount(this);
     }
 
     public CreditAccount(CreditAccount creditAccount) {
@@ -45,7 +44,6 @@ public class CreditAccount extends Account {
         this.paymentAccount = creditAccount.getPaymentAccount();
         this.interestRate = creditAccount.getInterestRate();
         this.remainingSum = creditAccount.getRemainingSum();
-        super.user.setCreditAccount(this);
     }
 
     @Override

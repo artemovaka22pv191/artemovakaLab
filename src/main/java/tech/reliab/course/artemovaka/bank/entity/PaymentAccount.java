@@ -10,13 +10,11 @@ public class PaymentAccount extends Account {
     public PaymentAccount(int id, User user, Bank bank, double money) {
         super(id, user, bank);
         this.money = money;
-        super.user.setPaymentAccount(this);
     }
 
     public PaymentAccount(PaymentAccount paymentAccount) {
         super(paymentAccount.getId(), paymentAccount.getUser(), paymentAccount.getBank());
         this.money = paymentAccount.getMoney();
-        super.user.setPaymentAccount(this);
     }
 
     @Override
