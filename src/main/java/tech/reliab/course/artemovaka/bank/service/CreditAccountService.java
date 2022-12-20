@@ -33,6 +33,11 @@ public interface CreditAccountService {
     public List<CreditAccount> getAllCreditAccountByIdUser(int userId);
 
     /**
+     * Получение всех кредитных аккаунтов
+     **/
+    List<CreditAccount> getAllCreditAccount();
+
+    /**
      * Вывод подробной информации о кредитном аккаунте
      */
     public String read(int creditAccountId);

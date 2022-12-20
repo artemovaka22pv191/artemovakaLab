@@ -1,10 +1,13 @@
 package tech.reliab.course.artemovaka.bank.service;
 
+import tech.reliab.course.artemovaka.bank.entity.Bank;
 import tech.reliab.course.artemovaka.bank.entity.CreditAccount;
 import tech.reliab.course.artemovaka.bank.entity.PaymentAccount;
 import tech.reliab.course.artemovaka.bank.entity.User;
 import tech.reliab.course.artemovaka.bank.exceptions.NegativeAmountException;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 public interface UserService {
@@ -75,4 +78,18 @@ public interface UserService {
     исходя из ежемесячного дохода, от меньше 1 000 – 100, от 1 000 до 2 000 – 200 и т.д. вплоть до 10 000 )
      **/
     void calculateRating(User user);
-}
+
+    /**
+     Вывод всех счетов bank
+     **/
+    void saveToFile(String fileName, int bankId) throws IOException;
+
+    /**
+     Перенос счетов creditAccountId, payAccountId из файла fileName
+     в банк toBankId
+     Если данные счет не найден, перенос не происходит
+     Если creditAccountId = -1 кредитный аккаунт не переносится
+     Если payAccountId = -1 платежный аккаунт не переносится
+     **/
+    void transfer(String fileName, int toBankId, int creditAccountId, int payAccountId) throws IOException;
+    }

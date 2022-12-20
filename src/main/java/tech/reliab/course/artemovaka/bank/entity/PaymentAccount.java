@@ -1,5 +1,9 @@
 package tech.reliab.course.artemovaka.bank.entity;
 
+import tech.reliab.course.artemovaka.bank.entity.jsonClasses.JsonPayAccount;
+import tech.reliab.course.artemovaka.bank.service.impl.BankServiceImpl;
+import tech.reliab.course.artemovaka.bank.service.impl.UserServiceImpl;
+
 public class PaymentAccount extends Account {
     private double money;
 
@@ -15,6 +19,13 @@ public class PaymentAccount extends Account {
     public PaymentAccount(PaymentAccount paymentAccount) {
         super(paymentAccount.getId(), paymentAccount.getUser(), paymentAccount.getBank());
         this.money = paymentAccount.getMoney();
+    }
+
+    public PaymentAccount(JsonPayAccount jsonPayAcc) {
+        this.id = jsonPayAcc.getId();
+        this.bank = BankServiceImpl.getInstance().getBankById(jsonPayAcc.getBankID());
+        this.user = UserServiceImpl.getInstance().getUserById(jsonPayAcc.getUserID());
+        this.money = jsonPayAcc.getMoney();
     }
 
     @Override

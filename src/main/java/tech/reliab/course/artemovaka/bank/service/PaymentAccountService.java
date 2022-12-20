@@ -54,7 +54,7 @@ public interface PaymentAccountService {
 
 	/**
 	 * Создаёт счёт, при условии, что у пользователя нет счёта в указанном банке
-	 * @return возвращает найденный или созданный счёт
+	 * возвращает найденный или созданный счёт
 	 */
 	PaymentAccount paymentAccountRegistration(Bank bank, User user, double money) throws NegativeAmountException;
 }

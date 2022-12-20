@@ -107,7 +107,7 @@ public class Main {
             id = 1;
             for (Bank bank : banks) {
                 var user = new User(
-                        id, "Пользователь " + id + " банка " + bank.getName(),
+                        id, "Пользователь " + id,
                         LocalDate.of(2004, random.nextInt(11) + 1,
                                 random.nextInt(27) + 1), random.nextInt(3000) + 2000,
                         "адрес работы");
@@ -115,7 +115,7 @@ public class Main {
                 bankService.addClient(bank.getId(), user);
                 id += 1;
                 user = new User(
-                        id, "Пользователь " + id + " банка " + bank.getName(),
+                        id, "Пользователь " + id,
                         LocalDate.of(2004, random.nextInt(11) + 1,
                                 random.nextInt(27) + 1), random.nextInt(3000) + 2000,
                         "адрес работы");
@@ -123,91 +123,39 @@ public class Main {
                 bankService.addClient(bank.getId(), user);
                 id += 1;
             }
-            try{
-                bankService.issueLoan(1, 100, 12);
-            }
-            catch (Exception e) {
+
+            //создаем 2 платежных и 2 кредитных счета в 1 банке
+            //переносим 1 кредитный и 2 платежный счета во 2 файл
+            try {
+                paymentAccountService.create(new PaymentAccount(1, userService.getUserById(1), bankService.getBankById(1), random.nextInt(4000) + 2000));
+                paymentAccountService.create(new PaymentAccount(2, userService.getUserById(2), bankService.getBankById(1), random.nextInt(4000) + 2000));
+                creditAccountService.create(new CreditAccount(1, userService.getUserById(1), bankService.getBankById(1),
+                        LocalDate.of(2004, random.nextInt(11) + 1, random.nextInt(27) + 1),
+                        random.nextInt(10) + 1,
+                        random.nextInt(2000) + 1000,
+                        employeeService.getEmployeeById(1),
+                        paymentAccountService.getPaymentAccountById(1)
+                ));
+                creditAccountService.create(new CreditAccount(2, userService.getUserById(2), bankService.getBankById(1),
+                        LocalDate.of(2004, random.nextInt(11) + 1, random.nextInt(27) + 1),
+                        random.nextInt(10) + 1,
+                        random.nextInt(2000) + 1000,
+                        employeeService.getEmployeeById(1),
+                        paymentAccountService.getPaymentAccountById(2)
+                ));
+
+                userService.saveToFile("old.txt", 1);
+                userService.transfer("old.txt", 2, 1, 2);
+                userService.saveToFile("new2.txt", 2);
+                userService.saveToFile("new1.txt", 1);
+
+            } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
 
-/*
-        List<User> users = userService.getAllUsers();
-        // Создание по 2 платежных аккаунта у каждого пользователя
-        id = 1;
-        for (User user : users) {
-            paymentAccountService.create(new PaymentAccount(id, user, user.getBanks().get(0), random.nextInt(4000) + 2000));
-            id += 1;
-            paymentAccountService.create(new PaymentAccount(id, user, user.getBanks().get(0), random.nextInt(4000) + 2000));
-            id += 1;
-        }
-
-        // Создание по 2 кредитных аккаунта у каждого пользователя
-        id = 1;
-        for (User user : users) {
-            List<Employee> employees = employeeService.getAllEmployeeByIdBank(user.getBanks().get(0).getId());
-            List<PaymentAccount> paymentAccounts = paymentAccountService.getAllPaymentAccountByIdUser(user.getId());
-            creditAccountService.create(new CreditAccount(id, user, user.getBanks().get(0),
-                    LocalDate.of(2004, random.nextInt(11) + 1, random.nextInt(27) + 1),
-                    random.nextInt(10) + 1,
-                    random.nextInt(4000) + 1000,
-                    employeeService.getEmployeeById(random.nextInt(employees.size() + 1)),
-                    paymentAccountService.getPaymentAccountById(random.nextInt(paymentAccounts.size() + 1))
-            ));
-            id += 1;
-            creditAccountService.create(new CreditAccount(id, user, null,
-                    LocalDate.of(2004, random.nextInt(11) + 1, random.nextInt(27) + 1),
-                    random.nextInt(10) + 1,
-                    random.nextInt(2000) + 1000,
-                    employeeService.getEmployeeById(random.nextInt(employees.size() + 1)),
-                    paymentAccountService.getPaymentAccountById(random.nextInt(paymentAccounts.size() + 1))
-            ));
-            id += 1;
-        }
-
- */
-
-            // Опция вывода информации о банке
-            Scanner in = new Scanner(System.in);
-            List<Bank> banksList = bankService.getAllBanks();
-            StringBuilder bankOption = new StringBuilder("----------------------------------------\n");
-            bankOption.append("Введите id банка для вывода подробной информации\n");
-            bankOption.append("Введите -1 для выхода\n");
-            bankOption.append("ID существующих банков: ");
-            for (Bank bank : banksList) {
-                bankOption.append(bank.getId()).append("  ");
-            }
-            bankOption.append("\n----------------------------------------\n");
-            System.out.println(bankOption);
-
-            int inputValue = in.nextInt();
-            while (inputValue != -1) {
-                System.out.println(bankService.read(inputValue));
-                System.out.println(bankOption);
-                inputValue = in.nextInt();
-            }
-
-            // Опция вывода информации о счетах пользователя
-            List<User> usersList = userService.getAllUsers();
-            StringBuilder userOption = new StringBuilder("----------------------------------------\n");
-            userOption.append("Введите id пользователя для вывода подробной информации\n");
-            userOption.append("Введите -1 для выхода\n");
-            userOption.append("ID существующих пользователей: ");
-            for (User user : usersList) {
-                userOption.append(user.getId()).append("  ");
-            }
-            userOption.append("\n----------------------------------------\n");
-            System.out.println(userOption);
-
-            inputValue = in.nextInt();
-            while (inputValue != -1) {
-                System.out.println(userService.read(inputValue));
-                System.out.println(userOption);
-                inputValue = in.nextInt();
-            }
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Выход за границы списка!");
-        }
-        catch (NegativeAmountException | ObjectCreatException e) {
+        } catch (NegativeAmountException | ObjectCreatException e) {
             System.out.println(e.getMessage());
         }
     }

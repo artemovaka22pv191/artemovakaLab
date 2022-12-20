@@ -103,9 +103,9 @@ public interface BankService {
 
 	/**
 	 * Выдаёт кредит пользователю
-	 * @param userId id пользователя, которому будет выдан кредит
-	 * @param creditSum сумма, на которую будет выдан кредит
-	 * @return возвращает id кредита, если он был выдан, иначе возвращает null.
+	 * userId id пользователя, которому будет выдан кредит
+	 * creditSum сумма, на которую будет выдан кредит
+	 * возвращает id кредита, если он был выдан, иначе возвращает null.
 	 */
 	int issueLoan(int userId, double creditSum, int mountNumber) throws CreditException, ShortageMoneyException, NegativeAmountException, AtmIssuingMoneyException;
 }

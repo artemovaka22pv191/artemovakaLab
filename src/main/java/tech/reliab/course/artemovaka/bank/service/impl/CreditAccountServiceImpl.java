@@ -135,4 +135,9 @@ public class CreditAccountServiceImpl implements CreditAccountService {
         }
     };
 
+    @Override
+    public List<CreditAccount> getAllCreditAccount(){
+        return creditAccounts.values().stream().toList();
+    };
+
 }

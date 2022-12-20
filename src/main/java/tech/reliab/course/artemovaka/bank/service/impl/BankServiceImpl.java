@@ -330,6 +330,7 @@ public class BankServiceImpl implements BankService {
                 var creditAccount = creditAccountService.createCreditAccount(listBanks.get(i), user,
                         paymentAccount, employees.get(e), creditSum, mountNumber);
                 if (creditAccount == null) {
+                    PaymentAccountServiceImpl.getInstance().deletePaymentAccountById(paymentAccount.getId());
                     continue;
                 }
                 AtmServiceImpl.getInstance().withdrawMoney(atms.get(l).getId(), creditSum);
