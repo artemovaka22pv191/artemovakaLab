@@ -6,6 +6,7 @@ import tech.reliab.course.artemovaka.bank.exceptions.CreditException;
 import tech.reliab.course.artemovaka.bank.exceptions.NegativeAmountException;
 import tech.reliab.course.artemovaka.bank.exceptions.ShortageMoneyException;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface BankService {
@@ -108,4 +109,17 @@ public interface BankService {
 	 * возвращает id кредита, если он был выдан, иначе возвращает null.
 	 */
 	int issueLoan(int userId, double creditSum, int mountNumber) throws CreditException, ShortageMoneyException, NegativeAmountException, AtmIssuingMoneyException;
+
+	/**
+	 Вывод всех счетов bankId
+	 **/
+	void saveToFile(String fileName, int bankId) throws IOException;
+
+	/**
+	 Перенос счетов creditAccountId, payAccountId из файла fileName в банк toBankId
+	 Если данные счет не найден, перенос не происходит
+	 Если creditAccountId = -1 кредитный аккаунт не переносится
+	 Если payAccountId = -1 платежный аккаунт не переносится
+	 **/
+	void transfer(String fileName, int toBankId, int creditAccountId, int payAccountId) throws IOException;
 }

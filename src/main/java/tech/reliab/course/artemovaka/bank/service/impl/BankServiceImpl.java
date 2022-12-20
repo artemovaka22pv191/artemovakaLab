@@ -1,6 +1,10 @@
 package tech.reliab.course.artemovaka.bank.service.impl;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import tech.reliab.course.artemovaka.bank.entity.*;
+import tech.reliab.course.artemovaka.bank.entity.jsonClasses.JsonCreditAccount;
+import tech.reliab.course.artemovaka.bank.entity.jsonClasses.JsonPayAccount;
 import tech.reliab.course.artemovaka.bank.exceptions.AtmIssuingMoneyException;
 import tech.reliab.course.artemovaka.bank.exceptions.CreditException;
 import tech.reliab.course.artemovaka.bank.exceptions.NegativeAmountException;
@@ -9,6 +13,8 @@ import tech.reliab.course.artemovaka.bank.service.BankOfficeService;
 import tech.reliab.course.artemovaka.bank.service.BankService;
 import tech.reliab.course.artemovaka.bank.utils.BankComparator;
 
+import java.io.*;
+import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -17,9 +23,10 @@ public class BankServiceImpl implements BankService {
     private static BankServiceImpl INSTANCE;
 
     private final Map<Integer, Bank> banks = new HashMap<>();
+    Type payAccArrType = new TypeToken<ArrayList<JsonPayAccount>>() {}.getType();
+    Type credAccArrType = new TypeToken<ArrayList<JsonCreditAccount>>() {}.getType();
 
-    private BankServiceImpl() {
-    }
+    private BankServiceImpl() {}
 
     public static BankServiceImpl getInstance() {
         if (INSTANCE == null) {
@@ -30,7 +37,7 @@ public class BankServiceImpl implements BankService {
     }
 
     @Override
-    public Bank create(Bank bank){
+    public Bank create(Bank bank) {
         if (bank != null) {
             if (bank.getId() < 0) {
                 throw new ArrayIndexOutOfBoundsException();
@@ -64,7 +71,7 @@ public class BankServiceImpl implements BankService {
     }
 
     @Override
-    public Bank getBankById(int bankId){
+    public Bank getBankById(int bankId) {
         Bank bank = banks.get(bankId);
         if (bank == null) {
             throw new ArrayIndexOutOfBoundsException();
@@ -73,7 +80,7 @@ public class BankServiceImpl implements BankService {
     }
 
     @Override
-    public Boolean deleteBankById(int bankId)throws NegativeAmountException{
+    public Boolean deleteBankById(int bankId) throws NegativeAmountException {
         BankOfficeService bankOfficeService = BankOfficeServiceImpl.getInstance();
         if (banks.containsKey(bankId)) {
 
@@ -96,7 +103,7 @@ public class BankServiceImpl implements BankService {
     }
 
     @Override
-    public String read(int bankId){
+    public String read(int bankId) {
         BankOfficeServiceImpl bankOfficeService = BankOfficeServiceImpl.getInstance();
         UserServiceImpl userService = UserServiceImpl.getInstance();
         EmployeeServiceImpl employeeService = EmployeeServiceImpl.getInstance();
@@ -156,7 +163,7 @@ public class BankServiceImpl implements BankService {
     }
 
     @Override
-    public void depositMoney(int bankId, double sum){
+    public void depositMoney(int bankId, double sum) {
         Bank bank = getBankById(bankId);
         if (bank != null) {
             bank.setMoney(bank.getMoney() + sum);
@@ -164,7 +171,7 @@ public class BankServiceImpl implements BankService {
     }
 
     @Override
-    public void withdrawMoney(int bankId, double sum){
+    public void withdrawMoney(int bankId, double sum) {
         Bank bank = getBankById(bankId);
         if (bank != null) {
             if (bank.getMoney() >= sum) {
@@ -176,7 +183,7 @@ public class BankServiceImpl implements BankService {
     }
 
     @Override
-    public Boolean addClient(int bankId, User user){
+    public Boolean addClient(int bankId, User user) {
         Bank bank = getBankById(bankId);
         if ((bank != null) && (user != null)) {
             user.addBank(bank);
@@ -187,7 +194,7 @@ public class BankServiceImpl implements BankService {
     }
 
     @Override
-    public Boolean deleteClient(int bankId, int id){
+    public Boolean deleteClient(int bankId, int id) {
         Bank bank = getBankById(bankId);
         if (bank != null) {
             int countClient = bank.getCountClient();
@@ -202,7 +209,7 @@ public class BankServiceImpl implements BankService {
     }
 
     @Override
-    public Boolean addEmployee(int bankId, Employee employee){
+    public Boolean addEmployee(int bankId, Employee employee) {
         Bank bank = getBankById(bankId);
         if ((bank != null) && (employee != null)) {
             employee.setBank(bank);
@@ -213,7 +220,7 @@ public class BankServiceImpl implements BankService {
     }
 
     @Override
-    public Boolean deleteEmployee(int bankId, int id){
+    public Boolean deleteEmployee(int bankId, int id) {
         Bank bank = getBankById(bankId);
         if (bank != null) {
 
@@ -229,7 +236,7 @@ public class BankServiceImpl implements BankService {
     }
 
     @Override
-    public void addOffice(int bankId, BankOffice bankOffice){
+    public void addOffice(int bankId, BankOffice bankOffice) {
         Bank bank = getBankById(bankId);
         if ((bank != null) && (bankOffice != null)) {
             bank.setCountOffice(bank.getCountOffice() + 1);
@@ -239,7 +246,7 @@ public class BankServiceImpl implements BankService {
     }
 
     @Override
-    public Boolean deleteOffice(int bankId, int bankOfficeId)throws NegativeAmountException{
+    public Boolean deleteOffice(int bankId, int bankOfficeId) throws NegativeAmountException {
         BankOfficeService bankOfficeService = BankOfficeServiceImpl.getInstance();
         Bank bank = getBankById(bankId);
         BankOffice bankOffice = bankOfficeService.getBankOfficeById(bankOfficeId);
@@ -297,7 +304,7 @@ public class BankServiceImpl implements BankService {
     }
 
     @Override
-    public int issueLoan(int userId, double creditSum, int mountNumber)throws CreditException, ShortageMoneyException, NegativeAmountException, AtmIssuingMoneyException {
+    public int issueLoan(int userId, double creditSum, int mountNumber) throws CreditException, ShortageMoneyException, NegativeAmountException, AtmIssuingMoneyException {
         var user = UserServiceImpl.getInstance().getUserById(userId);
         // получем список банков, отсортированных по правилу из лабораторной работы. Последний банк - самый лучший
         var listBanks = banks.values().stream().toList().stream().sorted(new BankComparator()).toList();
@@ -339,6 +346,96 @@ public class BankServiceImpl implements BankService {
             }
         }
         throw new CreditException(user);
+    }
+
+    // сериализация всех платежных аккаунтов банка bankID
+    private List<JsonPayAccount> makeJsonPaymentAcc(int bankID) {
+        List<JsonPayAccount> jsonPayment = new ArrayList<>();
+        var payAccounts = PaymentAccountServiceImpl.getInstance().getAllPaymentAccounts();
+        for (PaymentAccount paymentAccount : payAccounts) {
+            if (Objects.equals(paymentAccount.getBank().getId(), bankID)) {
+                jsonPayment.add(new JsonPayAccount(paymentAccount));
+            }
+        }
+        return jsonPayment;
+    }
+
+    // сериализация всех кредитных аккаунтов банка bankID
+    private List<JsonCreditAccount> makeJsonCreditAcc(Integer bankID) {
+        List<JsonCreditAccount> jsonCredit = new ArrayList<>();
+        var creditAccounts = CreditAccountServiceImpl.getInstance().getAllCreditAccount();
+        for (CreditAccount creditAccount : creditAccounts) {
+            if (Objects.equals(creditAccount.getBank().getId(), bankID)) {
+                jsonCredit.add(new JsonCreditAccount(creditAccount));
+            }
+        }
+        return jsonCredit;
+    }
+
+    @Override
+    public void saveToFile(String fileName, int bankId) throws IOException {
+        Gson gson = new Gson();
+        String payAccStr = gson.toJson(makeJsonPaymentAcc(bankId));
+        String creditAccStr = gson.toJson(this.makeJsonCreditAcc(bankId));
+        File file = new File(fileName);
+        FileWriter writer = new FileWriter(file);
+        writer.write("Платёжные счета:\n" + payAccStr + "\n\nКредитные счета:\n" + creditAccStr);
+        writer.close();
+    }
+
+    @Override
+    public void transfer(String fileName, int toBankId, int creditAccountId, int payAccountId) throws IOException {
+        //this.saveToFile(fileName, fromBankId);
+        Gson gson = new Gson();
+        File file = new File(fileName);
+        FileReader fr = new FileReader(file);
+        BufferedReader reader = new BufferedReader(fr);
+        String line = reader.readLine();
+        boolean first = true;
+        while (line != null) {
+            if (!line.isEmpty()) {
+                if (line.charAt(0) == '[') {
+                    if (first) {
+                        first = false;
+                        this.toPayAccount(gson.fromJson(line, payAccArrType), payAccountId, toBankId);
+                    } else {
+                        this.toCreditAccount(gson.fromJson(line, credAccArrType), creditAccountId, toBankId);
+                    }
+                }
+            }
+            line = reader.readLine();
+        }
+        fr.close();
+    }
+
+    private void toPayAccount(ArrayList<JsonPayAccount> jsonPayAcc, int PayId, int toBankId) {
+        if (PayId != -1) {
+            PaymentAccount payAcc = PaymentAccountServiceImpl.getInstance().getPaymentAccountById(PayId);
+            if (!jsonPayAcc.isEmpty()) {
+                for (int i = 0; i < jsonPayAcc.size(); i++) {
+                    if (jsonPayAcc.get(i).getId() == PayId) {
+                        jsonPayAcc.get(i).setBankID(toBankId);
+                        PaymentAccountServiceImpl.getInstance().deletePaymentAccountById(PayId);
+                        PaymentAccountServiceImpl.getInstance().addPaymentAccount(new PaymentAccount(jsonPayAcc.get(i)));
+                    }
+                }
+            }
+        }
+    }
+
+    private void toCreditAccount(ArrayList<JsonCreditAccount> jsonCreditAcc, int CreditId, int toBankId) {
+        if (CreditId != -1) {
+            CreditAccount CreditAcc = CreditAccountServiceImpl.getInstance().getCreditAccountById(CreditId);
+            if (!jsonCreditAcc.isEmpty()) {
+                for (int i = 0; i < jsonCreditAcc.size(); i++) {
+                    if (jsonCreditAcc.get(i).getId() == CreditId) {
+                        jsonCreditAcc.get(i).setBankID(toBankId);
+                        CreditAccountServiceImpl.getInstance().deleteCreditAccountById(CreditId);
+                        CreditAccountServiceImpl.getInstance().addCreditAccount(new CreditAccount(jsonCreditAcc.get(i)));
+                    }
+                }
+            }
+        }
     }
 
 }

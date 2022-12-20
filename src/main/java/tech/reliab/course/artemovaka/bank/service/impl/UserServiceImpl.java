@@ -236,10 +236,21 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
+    public void saveToFileByUserId(String fileName, int bankId, int userId) throws IOException {
+        Gson gson = new Gson();
+        String payAccStr = gson.toJson(makeJsonPaymentAccByUserId(bankId, userId));
+        String creditAccStr = gson.toJson(this.makeJsonCreditAccByUserId(bankId, userId));
+        File file = new File(fileName);
+        FileWriter writer = new FileWriter(file);
+        writer.write("Платёжные счета:\n" + payAccStr + "\n\nКредитные счета:\n" + creditAccStr);
+        writer.close();
+    }
+
     // сериализация всех платежных аккаунтов банка bankID
-    private List<JsonPayAccount> makeJsonPaymentAcc(int bankID) {
+    private List<JsonPayAccount> makeJsonPaymentAccByUserId(int bankID, int UserId) {
         List<JsonPayAccount> jsonPayment = new ArrayList<>();
-        var payAccounts = PaymentAccountServiceImpl.getInstance().getAllPaymentAccounts();
+        var payAccounts = PaymentAccountServiceImpl.getInstance().getAllPaymentAccountByIdUser(UserId);
         for (PaymentAccount paymentAccount : payAccounts) {
             if (Objects.equals(paymentAccount.getBank().getId(), bankID)) {
                 jsonPayment.add(new JsonPayAccount(paymentAccount));
@@ -249,81 +260,15 @@ public class UserServiceImpl implements UserService {
     }
 
     // сериализация всех кредитных аккаунтов банка bankID
-    private List<JsonCreditAccount> makeJsonCreditAcc(Integer bankID) {
+    private List<JsonCreditAccount> makeJsonCreditAccByUserId(Integer bankID, int UserId) {
         List<JsonCreditAccount> jsonCredit = new ArrayList<>();
-        var creditAccounts = CreditAccountServiceImpl.getInstance().getAllCreditAccount();
+        var creditAccounts = CreditAccountServiceImpl.getInstance().getAllCreditAccountByIdUser(UserId);
         for (CreditAccount creditAccount : creditAccounts) {
             if (Objects.equals(creditAccount.getBank().getId(), bankID)) {
                 jsonCredit.add(new JsonCreditAccount(creditAccount));
             }
         }
         return jsonCredit;
-    }
-
-    @Override
-    public void saveToFile(String fileName, int bankId) throws IOException {
-        Gson gson = new Gson();
-        String payAccStr = gson.toJson(makeJsonPaymentAcc(bankId));
-        String creditAccStr = gson.toJson(this.makeJsonCreditAcc(bankId));
-        File file = new File(fileName);
-        FileWriter writer = new FileWriter(file);
-        writer.write("Платёжные счета:\n" + payAccStr + "\n\nКредитные счета:\n" + creditAccStr);
-        writer.close();
-    }
-
-    @Override
-    public void transfer(String fileName, int toBankId, int creditAccountId, int payAccountId) throws IOException {
-        //this.saveToFile(fileName, fromBankId);
-        Gson gson = new Gson();
-        File file = new File(fileName);
-        FileReader fr = new FileReader(file);
-        BufferedReader reader = new BufferedReader(fr);
-        String line = reader.readLine();
-        boolean first = true;
-        while (line != null) {
-            if (!line.isEmpty()) {
-                if (line.charAt(0) == '[') {
-                    if (first) {
-                        first = false;
-                        this.toPayAccount(gson.fromJson(line, payAccArrType), payAccountId, toBankId);
-                    } else {
-                        this.toCreditAccount(gson.fromJson(line, credAccArrType), creditAccountId, toBankId);
-                    }
-                }
-            }
-            line = reader.readLine();
-        }
-        fr.close();
-    }
-
-    private void toPayAccount(ArrayList<JsonPayAccount> jsonPayAcc, int PayId, int toBankId) {
-        if (PayId != -1) {
-            PaymentAccount payAcc = PaymentAccountServiceImpl.getInstance().getPaymentAccountById(PayId);
-            if (!jsonPayAcc.isEmpty()) {
-                for (int i = 0; i < jsonPayAcc.size(); i++) {
-                    if (jsonPayAcc.get(i).getId() == PayId) {
-                        jsonPayAcc.get(i).setBankID(toBankId);
-                        PaymentAccountServiceImpl.getInstance().deletePaymentAccountById(PayId);
-                        PaymentAccountServiceImpl.getInstance().addPaymentAccount(new PaymentAccount(jsonPayAcc.get(i)));
-                    }
-                }
-            }
-        }
-    }
-
-    private void toCreditAccount(ArrayList<JsonCreditAccount> jsonCreditAcc, int CreditId, int toBankId) {
-        if (CreditId != -1) {
-            CreditAccount CreditAcc = CreditAccountServiceImpl.getInstance().getCreditAccountById(CreditId);
-            if (!jsonCreditAcc.isEmpty()) {
-                for (int i = 0; i < jsonCreditAcc.size(); i++) {
-                    if (jsonCreditAcc.get(i).getId() == CreditId) {
-                        jsonCreditAcc.get(i).setBankID(toBankId);
-                        CreditAccountServiceImpl.getInstance().deleteCreditAccountById(CreditId);
-                        CreditAccountServiceImpl.getInstance().addCreditAccount(new CreditAccount(jsonCreditAcc.get(i)));
-                    }
-                }
-            }
-        }
     }
 
 }

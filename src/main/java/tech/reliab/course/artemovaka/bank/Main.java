@@ -144,11 +144,10 @@ public class Main {
                         paymentAccountService.getPaymentAccountById(2)
                 ));
 
-                userService.saveToFile("old.txt", 1);
-                userService.transfer("old.txt", 2, 1, 2);
-                userService.saveToFile("new2.txt", 2);
-                userService.saveToFile("new1.txt", 1);
-
+                bankService.saveToFile("old.txt", 1);
+                bankService.transfer("old.txt", 2, 1, 2);
+                bankService.saveToFile("new2.txt", 2);
+                bankService.saveToFile("new1.txt", 1);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
