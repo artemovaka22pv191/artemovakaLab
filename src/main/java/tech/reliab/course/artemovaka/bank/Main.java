@@ -124,8 +124,7 @@ public class Main {
                 id += 1;
             }
 
-            //создаем 2 платежных и 2 кредитных счета в 1 банке
-            //переносим 1 кредитный и 2 платежный счета во 2 файл
+            // создаем 2 платежных и 2 кредитных счета в 1 банке
             try {
                 paymentAccountService.create(new PaymentAccount(1, userService.getUserById(1), bankService.getBankById(1), random.nextInt(4000) + 2000));
                 paymentAccountService.create(new PaymentAccount(2, userService.getUserById(2), bankService.getBankById(1), random.nextInt(4000) + 2000));
@@ -143,11 +142,35 @@ public class Main {
                         employeeService.getEmployeeById(1),
                         paymentAccountService.getPaymentAccountById(2)
                 ));
+                Scanner in = new Scanner(System.in);
+                var inputValue = 1;
+                while (inputValue != -1) {
+                    System.out.println("Введите имя файла в который необходимо записать счета : ");
+                    var fileName = in.nextLine();
+                    System.out.println("Введите id банка, счета которого необходимо записать в файл : ");
+                    var bankId = in.nextInt();
+                    System.out.println("Введите -1 для прекращения записи в файл : ");
+                    bankService.saveToFile(fileName, bankId);
+                    inputValue = in.nextInt();
+                    in.nextLine();
+                }
 
-                bankService.saveToFile("old.txt", 1);
-                bankService.transfer("old.txt", 2, 1, 2);
-                bankService.saveToFile("new2.txt", 2);
-                bankService.saveToFile("new1.txt", 1);
+                inputValue = 1;
+                while (inputValue != -1) {
+                    System.out.println("Введите имя файла из которого хотите перенести счет : ");
+                    var fileName = in.nextLine();
+                    System.out.println("Введите id банка в который хотите перенести счет : ");
+                    var bankId = in.nextInt();
+                    System.out.println("Введите номер платежного счета, который хотите перенести / если переносить платежный счет не нужно введите -1 : ");
+                    var payAccId = in.nextInt();
+                    System.out.println("Введите номер кредитного счета, который хотите перенести / если переносить кредитный счет не нужно введите -1 : ");
+                    var creditAccId = in.nextInt();
+                    bankService.transfer(fileName, bankId, creditAccId, payAccId);
+                    bankService.saveToFile("newFile" + bankId + ".txt", bankId);
+                    System.out.println("Введите -1 для выхода : ");
+                    inputValue = in.nextInt();
+                    in.nextLine();
+                }
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }

@@ -1,10 +1,7 @@
 package tech.reliab.course.artemovaka.bank.service;
 
 import tech.reliab.course.artemovaka.bank.entity.*;
-import tech.reliab.course.artemovaka.bank.exceptions.AtmIssuingMoneyException;
-import tech.reliab.course.artemovaka.bank.exceptions.CreditException;
-import tech.reliab.course.artemovaka.bank.exceptions.NegativeAmountException;
-import tech.reliab.course.artemovaka.bank.exceptions.ShortageMoneyException;
+import tech.reliab.course.artemovaka.bank.exceptions.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -121,5 +118,5 @@ public interface BankService {
 	 Если creditAccountId = -1 кредитный аккаунт не переносится
 	 Если payAccountId = -1 платежный аккаунт не переносится
 	 **/
-	void transfer(String fileName, int toBankId, int creditAccountId, int payAccountId) throws IOException;
+	void transfer(String fileName, int toBankId, int creditAccountId, int payAccountId) throws IOException, TransferAccountException;
 }

@@ -5,10 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import tech.reliab.course.artemovaka.bank.entity.*;
 import tech.reliab.course.artemovaka.bank.entity.jsonClasses.JsonCreditAccount;
 import tech.reliab.course.artemovaka.bank.entity.jsonClasses.JsonPayAccount;
-import tech.reliab.course.artemovaka.bank.exceptions.AtmIssuingMoneyException;
-import tech.reliab.course.artemovaka.bank.exceptions.CreditException;
-import tech.reliab.course.artemovaka.bank.exceptions.NegativeAmountException;
-import tech.reliab.course.artemovaka.bank.exceptions.ShortageMoneyException;
+import tech.reliab.course.artemovaka.bank.exceptions.*;
 import tech.reliab.course.artemovaka.bank.service.BankOfficeService;
 import tech.reliab.course.artemovaka.bank.service.BankService;
 import tech.reliab.course.artemovaka.bank.utils.BankComparator;
@@ -384,7 +381,7 @@ public class BankServiceImpl implements BankService {
     }
 
     @Override
-    public void transfer(String fileName, int toBankId, int creditAccountId, int payAccountId) throws IOException {
+    public void transfer(String fileName, int toBankId, int creditAccountId, int payAccountId) throws IOException, TransferAccountException{
         //this.saveToFile(fileName, fromBankId);
         Gson gson = new Gson();
         File file = new File(fileName);
@@ -408,7 +405,7 @@ public class BankServiceImpl implements BankService {
         fr.close();
     }
 
-    private void toPayAccount(ArrayList<JsonPayAccount> jsonPayAcc, int PayId, int toBankId) {
+    private void toPayAccount(ArrayList<JsonPayAccount> jsonPayAcc, int PayId, int toBankId)throws TransferAccountException {
         if (PayId != -1) {
             PaymentAccount payAcc = PaymentAccountServiceImpl.getInstance().getPaymentAccountById(PayId);
             if (!jsonPayAcc.isEmpty()) {
@@ -417,13 +414,17 @@ public class BankServiceImpl implements BankService {
                         jsonPayAcc.get(i).setBankID(toBankId);
                         PaymentAccountServiceImpl.getInstance().deletePaymentAccountById(PayId);
                         PaymentAccountServiceImpl.getInstance().addPaymentAccount(new PaymentAccount(jsonPayAcc.get(i)));
+                        System.out.println("Платежный счет " + PayId + " успешно перенесен!");
+                        return;
                     }
                 }
+
             }
+            throw new TransferAccountException();
         }
     }
 
-    private void toCreditAccount(ArrayList<JsonCreditAccount> jsonCreditAcc, int CreditId, int toBankId) {
+    private void toCreditAccount(ArrayList<JsonCreditAccount> jsonCreditAcc, int CreditId, int toBankId) throws TransferAccountException {
         if (CreditId != -1) {
             CreditAccount CreditAcc = CreditAccountServiceImpl.getInstance().getCreditAccountById(CreditId);
             if (!jsonCreditAcc.isEmpty()) {
@@ -432,9 +433,12 @@ public class BankServiceImpl implements BankService {
                         jsonCreditAcc.get(i).setBankID(toBankId);
                         CreditAccountServiceImpl.getInstance().deleteCreditAccountById(CreditId);
                         CreditAccountServiceImpl.getInstance().addCreditAccount(new CreditAccount(jsonCreditAcc.get(i)));
+                        System.out.println("Кредитный счет " + CreditId + " успешно перенесен!");
+                        return;
                     }
                 }
             }
+            throw new TransferAccountException();
         }
     }
 

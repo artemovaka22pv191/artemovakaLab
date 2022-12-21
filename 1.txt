@@ -1,0 +1,5 @@
+Платёжные счета:
+[{"id":1,"bankID":1,"userID":1,"money":4134.0},{"id":2,"bankID":1,"userID":2,"money":3685.0}]
+
+Кредитные счета:
+[{"id":1,"bankID":1,"userID":1,"dateStart":"2004-09-14","dateEnd":"2005-06-14","countMonth":9,"money":1607.0,"monthPay":211.9575628567912,"interestRate":18.70678691419545,"employeeId":1,"paymentAccountId":1},{"id":2,"bankID":1,"userID":2,"dateStart":"2004-05-02","dateEnd":"2004-12-02","countMonth":7,"money":2142.0,"monthPay":363.24276795743805,"interestRate":18.70678691419545,"employeeId":1,"paymentAccountId":2}]
