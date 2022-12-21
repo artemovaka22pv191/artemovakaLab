@@ -19,7 +19,7 @@ public class Main {
         EmployeeServiceImpl employeeService = EmployeeServiceImpl.getInstance();
         PaymentAccountServiceImpl paymentAccountService = PaymentAccountServiceImpl.getInstance();
         CreditAccountServiceImpl creditAccountService = CreditAccountServiceImpl.getInstance();
-        try {
+        try (Scanner in = new Scanner(System.in)) {
             bankService.create(new Bank(1, "Банк1"));
             bankService.create(new Bank(2, "Банк2"));
             bankService.create(new Bank(3, "Банк3"));
@@ -56,13 +56,13 @@ public class Main {
             id = 1;
             for (BankOffice bankOffice : bankOffices) {
                 atmService.create(new BankAtm(id, "Банкомат " + id + " офиса " + bankOffice.getName(), Status.WORK, true,
-                        true, bankOffice.getMoney()/2, random.nextInt(100) + 100, bankOffice, bankOffice.getBank(), null));
+                        true, bankOffice.getMoney() / 2, random.nextInt(100) + 100, bankOffice, bankOffice.getBank(), null));
 
                 id += 1;
 
                 atmService.create(new BankAtm(
                         id, "Банкомат " + id + " офиса " + bankOffice.getName(), Status.NOT_WORK, false,
-                        true, bankOffice.getMoney()/2, random.nextInt(100) + 100, bankOffice, bankOffice.getBank(), null));
+                        true, bankOffice.getMoney() / 2, random.nextInt(100) + 100, bankOffice, bankOffice.getBank(), null));
 
                 id += 1;
             }
@@ -123,7 +123,17 @@ public class Main {
                 bankService.addClient(bank.getId(), user);
                 id += 1;
             }
-            Scanner in = new Scanner(System.in);
+            StringBuilder infoOption = new StringBuilder("Клиенты:\n");
+            List<User> allUsers = userService.getAllUsers();
+            for(User user:allUsers){
+                infoOption.append(user.getId());
+                infoOption.append(" -- ");
+                infoOption.append(user.getName());
+                infoOption.append("\n");
+            }
+            infoOption.append("----------------------------------------\n");
+            System.out.println(infoOption);
+
             var inputValue = 1;
             while (inputValue != -1) {
                 System.out.println("Введите id клиента, который берет кредит: ");
@@ -133,7 +143,7 @@ public class Main {
                 System.out.println("Кол-во месяцев для взятия кредита : ");
                 var countMonth = in.nextInt();
                 try {
-                    var bankId = bankService.issueLoan(userkId, sum, countMonth);
+                    bankService.issueLoan(userkId, sum, countMonth);
                     System.out.println("Введите -1 для выхода : ");
                     inputValue = in.nextInt();
                     in.nextLine();
@@ -145,43 +155,25 @@ public class Main {
                 }
             }
 
-            // Опция вывода информации о банке
-            List<Bank> banksList = bankService.getAllBanks();
-            StringBuilder bankOption = new StringBuilder("----------------------------------------\n");
-            bankOption.append("Введите id банка для вывода подробной информации\n");
-            bankOption.append("Введите -1 для выхода\n");
-            bankOption.append("ID существующих банков: ");
-            for (Bank bank : banksList) {
-                bankOption.append(bank.getId()).append("  ");
-            }
-            bankOption.append("\n----------------------------------------\n");
-            System.out.println(bankOption);
+            StringBuilder accountOption = new StringBuilder("----------------------------------------\n");
 
-            inputValue = in.nextInt();
-            while (inputValue != -1) {
-                System.out.println(bankService.read(inputValue));
-                System.out.println(bankOption);
-                inputValue = in.nextInt();
+            // Опция вывода платежных счетов
+            List<PaymentAccount> paymentAccountsList = paymentAccountService.getAllPaymentAccounts();
+            accountOption.append("Платежные счета\n");
+            accountOption.append("----------------------------------------\n");
+            for(PaymentAccount account:paymentAccountsList){
+                accountOption.append(account);
+                accountOption.append("\n----------------------------------------\n");
             }
-
-            // Опция вывода информации о счетах пользователя
-            List<User> usersList = userService.getAllUsers();
-            StringBuilder userOption = new StringBuilder("----------------------------------------\n");
-            userOption.append("Введите id пользователя для вывода подробной информации\n");
-            userOption.append("Введите -1 для выхода\n");
-            userOption.append("ID существующих пользователей: ");
-            for (User user : usersList) {
-                userOption.append(user.getId()).append("  ");
+            // Опция вывода кредитных счетов
+            List<CreditAccount> creditAccountsList = creditAccountService.getAllCreditAccounts();
+            accountOption.append("Кредитные счета\n");
+            accountOption.append("----------------------------------------\n");
+            for(CreditAccount account:creditAccountsList){
+                accountOption.append(account);
+                accountOption.append("\n----------------------------------------\n");
             }
-            userOption.append("\n----------------------------------------\n");
-            System.out.println(userOption);
-
-            inputValue = 1;
-            while (inputValue != -1) {
-                System.out.println(userService.read(inputValue));
-                System.out.println(userOption);
-                inputValue = in.nextInt();
-            }
+            System.out.println(accountOption);
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Выход за границы списка!");
         } catch (NegativeAmountException | ObjectCreatException e) {

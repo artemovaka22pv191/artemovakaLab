@@ -54,6 +54,11 @@ public class CreditAccountServiceImpl implements CreditAccountService {
     }
 
     @Override
+    public List<CreditAccount> getAllCreditAccounts(){
+        return creditAccounts.values().stream().toList();
+    };
+
+    @Override
     public CreditAccount addCreditAccount(CreditAccount creditAccount) {
         if (creditAccount != null) {
             if (!creditAccounts.containsKey(creditAccount.getId())) {

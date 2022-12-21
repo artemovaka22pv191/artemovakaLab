@@ -93,7 +93,7 @@ public class PaymentAccountServiceImpl implements PaymentAccountService {
     }
 
     @Override
-    public void withdrawMoney(PaymentAccount account, double sum)throws NegativeAmountException  {
+    public void withdrawMoney(PaymentAccount account, double sum) throws NegativeAmountException {
         if (sum < 0) {
             throw new NegativeAmountException();
         }
@@ -124,14 +124,16 @@ public class PaymentAccountServiceImpl implements PaymentAccountService {
     }
 
     @Override
-    public PaymentAccount paymentAccountRegistration(Bank bank, User user, double money)throws NegativeAmountException {
+    public PaymentAccount paymentAccountRegistration(Bank bank, User user, double money) throws NegativeAmountException {
         if (money < 0) {
             throw new NegativeAmountException();
         }
-        if (paymentAccounts.values().stream().filter(account -> account.getUser().getId() == user.getId() &&
+        if (this.getAllPaymentAccountByIdUser(user.getId()).stream().filter(account ->
                 account.getBank().getId() == bank.getId()).toList().size() != 0) {
-            return paymentAccounts.values().stream().filter(account -> account.getUser().getId() == user.getId() &&
+            var payAccount = this.getAllPaymentAccountByIdUser(user.getId()).stream().filter(account ->
                     account.getBank().getId() == bank.getId()).toList().get(0);
+            payAccount.setMoney(payAccount.getMoney() + money);
+            return payAccount;
         } else {
             var account = new PaymentAccount(paymentAccounts.size(), user, bank, money);
             this.addPaymentAccount(account);
