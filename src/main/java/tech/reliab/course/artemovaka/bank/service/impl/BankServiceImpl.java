@@ -234,7 +234,6 @@ public class BankServiceImpl implements BankService {
         if ((bank != null) && (bankOffice != null)) {
             bank.setCountOffice(bank.getCountOffice() + 1);
             bank.setCountAtm(bank.getCountAtm() + bankOffice.getCountAtm());
-            depositMoney(bankId, bankOffice.getMoney());
         }
     }
 
@@ -252,7 +251,6 @@ public class BankServiceImpl implements BankService {
             } else {
                 if (bankOfficeService.deleteBankOffice(bankOfficeId)) {
                     bank.setCountOffice(bank.getCountOffice() - 1);
-                    withdrawMoney(bankId, bankOffice.getMoney());
                     return true;
                 }
             }
@@ -330,11 +328,13 @@ public class BankServiceImpl implements BankService {
                 var creditAccount = creditAccountService.createCreditAccount(listBanks.get(i), user,
                         paymentAccount, employees.get(e), creditSum, mountNumber);
                 if (creditAccount == null) {
+                    PaymentAccountServiceImpl.getInstance().deletePaymentAccountById(paymentAccount.getId());
                     continue;
                 }
                 AtmServiceImpl.getInstance().withdrawMoney(atms.get(l).getId(), creditSum);
                 creditAccountService.addCreditAccount(creditAccount);
-                return 1;
+                System.out.println("Кредит выдан в банке" + listBanks.get(i).getId());
+                return listBanks.get(i).getId();
             }
         }
         throw new CreditException(user);

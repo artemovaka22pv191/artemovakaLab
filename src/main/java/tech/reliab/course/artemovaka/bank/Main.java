@@ -33,19 +33,19 @@ public class Main {
             for (Bank bank : banks) {
                 bankOfficeService.create(new BankOffice(
                         id, "Офис " + id, "Адресс " + id, bank, true,
-                        true, true, true, true, random.nextInt(1000) + 1000,
+                        true, true, true, true, bank.getMoney() / 3,
                         random.nextInt(100) + 50));
                 id += 1;
 
                 bankOfficeService.create(new BankOffice(
                         id, "Офис " + id, "Адресс " + id, bank, true,
-                        true, false, false, true, random.nextInt(4000) + 1000,
+                        true, false, false, true, bank.getMoney() / 3,
                         random.nextInt(100) + 30));
                 id += 1;
 
                 bankOfficeService.create(new BankOffice(
                         id, "Офис " + id, "Адресс " + id, bank, true,
-                        true, true, false, true, random.nextInt(3000) + 1000,
+                        true, true, false, true, bank.getMoney() / 3,
                         random.nextInt(100) + 200));
                 id += 1;
             }
@@ -56,13 +56,13 @@ public class Main {
             id = 1;
             for (BankOffice bankOffice : bankOffices) {
                 atmService.create(new BankAtm(id, "Банкомат " + id + " офиса " + bankOffice.getName(), Status.WORK, true,
-                        true, random.nextInt(1000) + 500, random.nextInt(100) + 100, bankOffice, bankOffice.getBank(), null));
+                        true, bankOffice.getMoney()/2, random.nextInt(100) + 100, bankOffice, bankOffice.getBank(), null));
 
                 id += 1;
 
                 atmService.create(new BankAtm(
                         id, "Банкомат " + id + " офиса " + bankOffice.getName(), Status.NOT_WORK, false,
-                        true, random.nextInt(1000) + 500, random.nextInt(100) + 100, bankOffice, bankOffice.getBank(), null));
+                        true, bankOffice.getMoney()/2, random.nextInt(100) + 100, bankOffice, bankOffice.getBank(), null));
 
                 id += 1;
             }
@@ -107,7 +107,7 @@ public class Main {
             id = 1;
             for (Bank bank : banks) {
                 var user = new User(
-                        id, "Пользователь " + id + " банка " + bank.getName(),
+                        id, "Пользователь " + id,
                         LocalDate.of(2004, random.nextInt(11) + 1,
                                 random.nextInt(27) + 1), random.nextInt(3000) + 2000,
                         "адрес работы");
@@ -115,7 +115,7 @@ public class Main {
                 bankService.addClient(bank.getId(), user);
                 id += 1;
                 user = new User(
-                        id, "Пользователь " + id + " банка " + bank.getName(),
+                        id, "Пользователь " + id,
                         LocalDate.of(2004, random.nextInt(11) + 1,
                                 random.nextInt(27) + 1), random.nextInt(3000) + 2000,
                         "адрес работы");
@@ -123,51 +123,29 @@ public class Main {
                 bankService.addClient(bank.getId(), user);
                 id += 1;
             }
-            try{
-                bankService.issueLoan(1, 100, 12);
+            Scanner in = new Scanner(System.in);
+            var inputValue = 1;
+            while (inputValue != -1) {
+                System.out.println("Введите id клиента, который берет кредит: ");
+                var userkId = in.nextInt();
+                System.out.println("Введите сумму кредита : ");
+                var sum = in.nextInt();
+                System.out.println("Кол-во месяцев для взятия кредита : ");
+                var countMonth = in.nextInt();
+                try {
+                    var bankId = bankService.issueLoan(userkId, sum, countMonth);
+                    System.out.println("Введите -1 для выхода : ");
+                    inputValue = in.nextInt();
+                    in.nextLine();
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    System.out.println("Введите -1 для выхода : ");
+                    inputValue = in.nextInt();
+                    in.nextLine();
+                }
             }
-            catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-
-/*
-        List<User> users = userService.getAllUsers();
-        // Создание по 2 платежных аккаунта у каждого пользователя
-        id = 1;
-        for (User user : users) {
-            paymentAccountService.create(new PaymentAccount(id, user, user.getBanks().get(0), random.nextInt(4000) + 2000));
-            id += 1;
-            paymentAccountService.create(new PaymentAccount(id, user, user.getBanks().get(0), random.nextInt(4000) + 2000));
-            id += 1;
-        }
-
-        // Создание по 2 кредитных аккаунта у каждого пользователя
-        id = 1;
-        for (User user : users) {
-            List<Employee> employees = employeeService.getAllEmployeeByIdBank(user.getBanks().get(0).getId());
-            List<PaymentAccount> paymentAccounts = paymentAccountService.getAllPaymentAccountByIdUser(user.getId());
-            creditAccountService.create(new CreditAccount(id, user, user.getBanks().get(0),
-                    LocalDate.of(2004, random.nextInt(11) + 1, random.nextInt(27) + 1),
-                    random.nextInt(10) + 1,
-                    random.nextInt(4000) + 1000,
-                    employeeService.getEmployeeById(random.nextInt(employees.size() + 1)),
-                    paymentAccountService.getPaymentAccountById(random.nextInt(paymentAccounts.size() + 1))
-            ));
-            id += 1;
-            creditAccountService.create(new CreditAccount(id, user, null,
-                    LocalDate.of(2004, random.nextInt(11) + 1, random.nextInt(27) + 1),
-                    random.nextInt(10) + 1,
-                    random.nextInt(2000) + 1000,
-                    employeeService.getEmployeeById(random.nextInt(employees.size() + 1)),
-                    paymentAccountService.getPaymentAccountById(random.nextInt(paymentAccounts.size() + 1))
-            ));
-            id += 1;
-        }
-
- */
 
             // Опция вывода информации о банке
-            Scanner in = new Scanner(System.in);
             List<Bank> banksList = bankService.getAllBanks();
             StringBuilder bankOption = new StringBuilder("----------------------------------------\n");
             bankOption.append("Введите id банка для вывода подробной информации\n");
@@ -179,7 +157,7 @@ public class Main {
             bankOption.append("\n----------------------------------------\n");
             System.out.println(bankOption);
 
-            int inputValue = in.nextInt();
+            inputValue = 1;
             while (inputValue != -1) {
                 System.out.println(bankService.read(inputValue));
                 System.out.println(bankOption);
@@ -198,7 +176,7 @@ public class Main {
             userOption.append("\n----------------------------------------\n");
             System.out.println(userOption);
 
-            inputValue = in.nextInt();
+            inputValue = 1;
             while (inputValue != -1) {
                 System.out.println(userService.read(inputValue));
                 System.out.println(userOption);
@@ -206,8 +184,7 @@ public class Main {
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Выход за границы списка!");
-        }
-        catch (NegativeAmountException | ObjectCreatException e) {
+        } catch (NegativeAmountException | ObjectCreatException e) {
             System.out.println(e.getMessage());
         }
     }

@@ -23,10 +23,10 @@ public class CreditAccount extends Account {
                          Employee employee, PaymentAccount paymentAccount) {
         super(id, user, bank);
         this.dateStart = dateStart;
-        this.dateEnd = null;
+        this.dateEnd = dateStart.plusMonths(countMonth);
         this.countMonth = countMonth;
         this.money = money;
-        this.monthPay = 0.0;
+        this.monthPay = money/countMonth;
         this.employee = employee;
         this.paymentAccount = paymentAccount;
         this.interestRate = 0;
@@ -36,7 +36,7 @@ public class CreditAccount extends Account {
     public CreditAccount(CreditAccount creditAccount) {
         super(creditAccount.getId(), creditAccount.getUser(), creditAccount.getBank());
         this.dateStart = creditAccount.getDateStart();
-        this.dateEnd = creditAccount.getDateEnd();
+        this.dateEnd = creditAccount.getDateStart().plusMonths(creditAccount.getCountMonth());
         this.countMonth = creditAccount.getCountMonth();
         this.money = creditAccount.getMoney();
         this.monthPay = creditAccount.getMonthPay();
@@ -58,7 +58,6 @@ public class CreditAccount extends Account {
                 "Дата окончания кредита: " + (dateEnd != null ? dateEnd.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) : "") + "\n" +
                 "Кол-во месяцев: " + countMonth + "\n" +
                 "Ежемесячная выплата: " + String.format("%.4f", monthPay) + "\n" +
-                "Процентная ставка: " + String.format("%.2f", interestRate) + "\n" +
                 "Работник: " + (employee != null ? employee.getName() : "") + "\n" +
                 "ID платежного аккаунта: " + (paymentAccount != null ? paymentAccount.getId() : "") + "\n";
     }

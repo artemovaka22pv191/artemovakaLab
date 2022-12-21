@@ -173,7 +173,6 @@ public class BankOfficeServiceImpl implements BankOfficeService {
 				bankAtm.setBankOffice(bankOffice);
 				bankAtm.setBank(bankOffice.getBank());
 				bankAtm.setAddress(bankOffice.getAddress());
-				depositMoney(bankOfficeId, bankAtm.getMoney());
 				return true;
 			} else {
 				System.out.println("В офисе " + bankOffice.getName() + " нельзя устанавливать банкоматы");
@@ -195,7 +194,6 @@ public class BankOfficeServiceImpl implements BankOfficeService {
 			if (atmService.deleteBankAtm(idAtm) != null) {
 				bankOffice.setCountAtm(bankOffice.getCountAtm() - 1);
 				bankOffice.getBank().setCountAtm(bankOffice.getBank().getCountAtm() - 1);
-				withdrawMoney(bankOfficeId, sum);
 				return true;
 			}
 		}
