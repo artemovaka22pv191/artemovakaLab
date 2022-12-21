@@ -21,7 +21,7 @@ public interface UserService {
     /**
      * Получение пользователя по id
      **/
-    User getUserById(int userId);
+    User getUserById(int userId) throws ArrayIndexOutOfBoundsException;
 
     /**
      * Удаление работника по id

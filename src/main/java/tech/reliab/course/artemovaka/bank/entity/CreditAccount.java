@@ -26,10 +26,10 @@ public class CreditAccount extends Account {
         this.dateEnd = dateStart.plusMonths(countMonth);
         this.countMonth = countMonth;
         this.money = money;
-        this.monthPay = money/countMonth;
+        this.monthPay = money / countMonth + (money / 100 * bank.getInterestRate()) / 12;
         this.employee = employee;
         this.paymentAccount = paymentAccount;
-        this.interestRate = 0;
+        this.interestRate = bank.getInterestRate();
         this.remainingSum = this.money;
     }
 
@@ -39,11 +39,12 @@ public class CreditAccount extends Account {
         this.dateEnd = creditAccount.getDateStart().plusMonths(creditAccount.getCountMonth());
         this.countMonth = creditAccount.getCountMonth();
         this.money = creditAccount.getMoney();
-        this.monthPay = creditAccount.getMonthPay();
+        this.monthPay = creditAccount.getMonthPay() + (creditAccount.getMoney() / 100 * creditAccount.getBank().getInterestRate()) / 12;
         this.employee = creditAccount.getEmployee();
         this.paymentAccount = creditAccount.getPaymentAccount();
         this.interestRate = creditAccount.getInterestRate();
         this.remainingSum = creditAccount.getRemainingSum();
+        this.interestRate = creditAccount.getBank().getInterestRate();
     }
 
     @Override
@@ -54,6 +55,7 @@ public class CreditAccount extends Account {
                 "Банк: " + (bank != null ? bank.getName() : "") + " \n" +
                 "Владелец: " + (user != null ? user.getName() : "") + "\n" +
                 "Суммма кредита: " + String.format("%.4f", money) + "\n" +
+                "Процентная ставка: " + interestRate + "\n" +
                 "Дата начала кредита: " + (dateStart != null ? dateStart.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) : "") + "\n" +
                 "Дата окончания кредита: " + (dateEnd != null ? dateEnd.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) : "") + "\n" +
                 "Кол-во месяцев: " + countMonth + "\n" +

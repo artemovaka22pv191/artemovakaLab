@@ -295,7 +295,7 @@ public class BankServiceImpl implements BankService {
     }
 
     @Override
-    public void issueLoan(int userId, double creditSum, int mountNumber)throws CreditException, ShortageMoneyException, NegativeAmountException, AtmIssuingMoneyException {
+    public void issueLoan(int userId, double creditSum, int mountNumber)throws CreditException, ShortageMoneyException, NegativeAmountException, AtmIssuingMoneyException, ArrayIndexOutOfBoundsException{
         var user = UserServiceImpl.getInstance().getUserById(userId);
         // получем список банков, отсортированных по правилу из лабораторной работы. Последний банк - самый лучший
         var listBanks = banks.values().stream().toList().stream().sorted(new BankComparator()).toList();

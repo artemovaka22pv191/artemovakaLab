@@ -123,18 +123,29 @@ public class Main {
                 bankService.addClient(bank.getId(), user);
                 id += 1;
             }
-            StringBuilder infoOption = new StringBuilder("Клиенты:\n");
+            StringBuilder infoUserOption = new StringBuilder("Клиенты:\n");
             List<User> allUsers = userService.getAllUsers();
-            for(User user:allUsers){
-                infoOption.append(user.getId());
-                infoOption.append(" -- ");
-                infoOption.append(user.getName());
-                infoOption.append("\n");
+            for (User user : allUsers) {
+                infoUserOption.append(user.getId());
+                infoUserOption.append(" -- ");
+                infoUserOption.append(user.getName());
+                infoUserOption.append("\n");
             }
-            infoOption.append("----------------------------------------\n");
-            System.out.println(infoOption);
+            infoUserOption.append("----------------------------------------\n");
+            System.out.println(infoUserOption);
 
             var inputValue = 1;
+            System.out.println("Введите 0, если хотите просмотреть банки, иначе введите 1");
+            inputValue = in.nextInt();
+            if (inputValue == 0) {
+                StringBuilder infoBankOption = new StringBuilder("Банки:\n");
+                List<Bank> allBanks = bankService.getAllBanks();
+                for (Bank bank : allBanks) {
+                    infoBankOption.append(bank);
+                    infoBankOption.append("\n----------------------------------------\n");
+                }
+                System.out.println(infoBankOption);
+            }
             while (inputValue != -1) {
                 System.out.println("Введите id клиента, который берет кредит: ");
                 var userkId = in.nextInt();
@@ -144,11 +155,10 @@ public class Main {
                 var countMonth = in.nextInt();
                 try {
                     bankService.issueLoan(userkId, sum, countMonth);
-                    System.out.println("Введите -1 для выхода : ");
-                    inputValue = in.nextInt();
-                    in.nextLine();
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
+                }
+                finally {
                     System.out.println("Введите -1 для выхода : ");
                     inputValue = in.nextInt();
                     in.nextLine();
@@ -161,7 +171,7 @@ public class Main {
             List<PaymentAccount> paymentAccountsList = paymentAccountService.getAllPaymentAccounts();
             accountOption.append("Платежные счета\n");
             accountOption.append("----------------------------------------\n");
-            for(PaymentAccount account:paymentAccountsList){
+            for (PaymentAccount account : paymentAccountsList) {
                 accountOption.append(account);
                 accountOption.append("\n----------------------------------------\n");
             }
@@ -169,7 +179,7 @@ public class Main {
             List<CreditAccount> creditAccountsList = creditAccountService.getAllCreditAccounts();
             accountOption.append("Кредитные счета\n");
             accountOption.append("----------------------------------------\n");
-            for(CreditAccount account:creditAccountsList){
+            for (CreditAccount account : creditAccountsList) {
                 accountOption.append(account);
                 accountOption.append("\n----------------------------------------\n");
             }

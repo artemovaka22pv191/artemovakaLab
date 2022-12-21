@@ -59,10 +59,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserById(int userId){
+    public User getUserById(int userId)throws ArrayIndexOutOfBoundsException{
         var user = users.get(userId);;
         if(user == null){
-            throw new ArrayIndexOutOfBoundsException();
+            throw new ArrayIndexOutOfBoundsException("Пользователя с таким id не существует");
         }
         return users.get(userId);
     }
