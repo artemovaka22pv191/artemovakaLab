@@ -332,6 +332,8 @@ public class BankServiceImpl implements BankService {
                     continue;
                 }
                 AtmServiceImpl.getInstance().withdrawMoney(atms.get(l).getId(), creditSum);
+                BankServiceImpl.getInstance().withdrawMoney(listBanks.get(i).getId(), creditSum);
+                BankOfficeServiceImpl.getInstance().withdrawMoney(offices.get(j).getId(), creditSum );
                 creditAccountService.addCreditAccount(creditAccount);
                 System.out.println("Кредит выдан в банке" + listBanks.get(i).getId());
                 return listBanks.get(i).getId();

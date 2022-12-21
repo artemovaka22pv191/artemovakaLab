@@ -45,7 +45,7 @@ public class Main {
 
                 bankOfficeService.create(new BankOffice(
                         id, "Офис " + id, "Адресс " + id, bank, true,
-                        true, true, false, true, bank.getMoney() / 3,
+                        true, true, true, true, bank.getMoney() / 3,
                         random.nextInt(100) + 200));
                 id += 1;
             }
@@ -157,7 +157,7 @@ public class Main {
             bankOption.append("\n----------------------------------------\n");
             System.out.println(bankOption);
 
-            inputValue = 1;
+            inputValue = in.nextInt();
             while (inputValue != -1) {
                 System.out.println(bankService.read(inputValue));
                 System.out.println(bankOption);
